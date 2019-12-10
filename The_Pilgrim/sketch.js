@@ -338,7 +338,7 @@ function isOver() {
 
 function isTowerTall() {
 
-  if (blockcount / 9 == towerlevel) {
+  if (blockcount / 9 > towerlevel) {
     camera.zoom = camerazoom - 0.05
     camerazoom -= 0.05
     towerlevel++
