@@ -1,0 +1,15 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+canvas {
+  display: block;
+}
+/* div {
+  background: #d4e6f7;
+  border-radius: 4vh;
+  padding: 4vh;
+  margin: 22px;
+  box-shadow: 5px 10px 10px lightgrey;
+  text-align: center;
+} */
