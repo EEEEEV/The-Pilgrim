@@ -21,6 +21,7 @@ let blocksp;
 let blocksps = [];
 let playerX, playerY
 let healthBarWidth = 300;
+let camerascale = 1;
 
 let x1 = 100,
   y1 = 100,
@@ -35,13 +36,21 @@ function preload() {
   // towerani = loadAnimation('towersp/t1.png', 'towersp/t2.png', 'towersp/t3.png', 'towersp/t4.png', 'towersp/t5.png', 'towersp/t6.png','towersp/t7.png','towersp/t8.png','towersp/t9.png');
   towersp = createSprite(windowWidth / 2, windowHeight / 2);
   towerani = towersp.addAnimation('normal', 'towersp/t1.png', 'towersp/t2.png', 'towersp/t3.png', 'towersp/t4.png', 'towersp/t5.png', 'towersp/t6.png', 'towersp/t7.png', 'towersp/t8.png', 'towersp/t9.png');
-  towersp.scale = 0.12
+  towersp.scale = 0.12*camerascale
   //by default an animation plays but you may not want that
   towerani.playing = false;
+  textsp = createSprite(windowWidth / 2, windowHeight / 2);
+  textani = textsp.addAnimation('normal', 'textsp/textBox.png','textsp/text1.png', 'textsp/text2.png','textsp/text3.png','textsp/text4.png','textsp/text5.png','textsp/text6.png','textsp/text7.png');
+  textsp.scale = 0.1
+  textani.playing = false;
+
+  bgm = loadSound('bgm.mp3')
+
 
 }
 
 function setup() {
+
   canvas = createCanvas(windowWidth, windowHeight);
   background(0);
 
@@ -52,7 +61,7 @@ function setup() {
   y = 20
   speed = 5
 
-  
+  bgm.play()
 
   // //create array of brick on map
   // for (i = 0; i < 10; i++) {
@@ -67,10 +76,11 @@ function setup() {
     blocksp = createSprite(random(0, width), random(0, height));
     blocksp.collide(towersp);
     blocksp.addAnimation('normal', 'block1.png', 'block2.png');
-    blocksp.scale = 0.2
+    blocksp.scale = 0.2*camerascale
     blocksps.add(blocksp)
-
   }
+
+
 
   //generateBlockSp()
 
@@ -79,7 +89,7 @@ function setup() {
   // player.scale = 0.25
 
   stretchyPlayer()
-  
+  freeze = false;
 
   //player.debug = true;
 
@@ -92,7 +102,7 @@ function generateBlockSp() {
     blocksp = createSprite(blocks[i].x, blocks[i].y);
 
     blocksp.addAnimation('normal', 'block1.png', 'block2.png');
-    blocksp.scale = 0.2
+    blocksp.scale = 0.2*camerascale
     blocksps.push(blocksp)
   }
   //blocksp.debug = true;
@@ -105,29 +115,38 @@ function stretchyPlayer(){
 
     //the center of the sprite will be point 0,0
     //"this" in this function will reference the sprite itself
-    fill(237, 205, 0);
+    fill(182, 202, 18);
 
     //make the ellipse stretch in the sprite direction
     //proportionally to its speed
     push();
     rotate(radians(this.getDirection()));
    
-    ellipse(0, 0,  50+this.getSpeed()*0.3, 50-this.getSpeed()*0.3);
+    ellipse(0, 0,  (50+this.getSpeed()*0.3)*camerascale, (50-this.getSpeed()*0.3)*camerascale);
+    //fill(255,0,0)
+    //ellipse(0,0,(20+this.getSpeed()*0.3)*camerascale, (20-this.getSpeed()*0.3)*camerascale)
+    //
+    //rect(this.deltaX*2, this.deltaY*2,(20+this.getSpeed()*0.3)*camerascale, (20-this.getSpeed()*0.3)*camerascale)
     pop();
 
     //this.deltaX and this.deltaY are the position increment
     //since the last frame, move the face image toward the direction
     //image(face, this.deltaX*2, this.deltaY*2);
+    fill(255,0,0)
+    ellipse(this.deltaX*2, this.deltaY*2,40*camerascale)
+
+   
   };
 
-  stretchy.maxSpeed = 5;
+  stretchy.maxSpeed = 5-tail.length*0.1;
 
 
 }
 
 function mousePressed() {
   //camera.zoom = 0.5
-  loop()
+  //loop()
+  freeze = false;
   //running = !running // flip the boolean
   console.log("pressed")
   //lifespan = 1000
@@ -148,6 +167,7 @@ function draw() {
 
   isOver()
 
+
   //playerMove()
 
   //ellipse(x, y, 40, 40)
@@ -155,14 +175,14 @@ function draw() {
 
 
 
-  textBox = createImg(
-    'textBox.png',
-    'textbox'
-  );
-  textBox.position(width / 2, height / 2)
-  textBox.size(795, 543)
-  textBox.hide()
-  textBox.center()
+  // textBox = createImg(
+  //   'textBox.png',
+  //   'textbox'
+  // );
+  // textBox.position(width / 2, height / 2)
+  // textBox.size(795, 543)
+  // textBox.hide()
+  // textBox.center()
 
 
 
@@ -173,32 +193,21 @@ function draw() {
   // player.maxSpeed = 5;
 
   //update block
-  for (i = 0; i < blocks.length; i++) {
-    blocks[i].show()
-    if (blocks[i].update(x, y)) {
-      //follow player
-      tail.push(blocks[i])
-      //remove from map
-      blocks.splice(i, 1)
-      //score
-      //blockcount++
-      //spawn new block on map
-      block = new Blocks(random(0, windowWidth), random(0, windowHeight))
-      blocks.push(block)
-    }
-  }
-  // for (i = 0; i < blocksps.length; i++) {
-  //   blocksps[i].showsp()
-  //   if (blocksps[i].spcollide(player,blocksps[i].blocksp)) {
+  // for (i = 0; i < blocks.length; i++) {
+  //   blocks[i].show()
+  //   if (blocks[i].update(x, y)) {
   //     //follow player
-  //     tail.push(blocksps[i])
+  //     tail.push(blocks[i])
   //     //remove from map
-  //     blocksps.splice(i, 1)
+  //     blocks.splice(i, 1)
+  //     //score
+  //     //blockcount++
   //     //spawn new block on map
-  //     blocksp = new Blocks(random(0, windowWidth), random(0, windowHeight))
-  //     blocksps.push(blocksp)
+  //     block = new Blocks(random(0, windowWidth), random(0, windowHeight))
+  //     blocks.push(block)
   //   }
   // }
+
 
   //update block
   for (i = 0; i < blocksps.length; i++) {
@@ -214,55 +223,74 @@ function draw() {
       blocksp = createSprite(random(0, width), random(0, height))
       blocksp.collide(towersp);
       blocksp.addAnimation('normal', 'block1.png', 'block2.png');
-      blocksp.scale = 0.2
+      blocksp.scale = 0.2*camerascale
       
       blocksps.add(blocksp)
-      drawSprites(blocksps);
+      drawSprites(blocksp);
     }
   }
 
-  drawTail()
+  //drawTail()
 
-  //draw tower
-  rectMode(CENTER)
-  rect(width / 2, height / 2, 200, 200)
-
-  stretchy.velocity.x = (mouseX-stretchy.position.x)/10;
-  stretchy.velocity.y = (mouseY-stretchy.position.y)/10;
-
-  fill(231,100,100,120)
-  ellipse(width / 2, height / 2,400)
+ 
 
 
+
+
+
+  safeArea()
+  //ellipse(width / 2, height / 2,400)
+
+  blocksps.scale = 0.2*camerascale
+
+   //draw tower
+  towersp.scale = 0.12*camerascale
   drawSprites();
   drawHealthBar()
 
-  
+  continuetext = createDiv("Press to continue")
+  continuetext.position(windowWidth / 2, height / 10 * 9)
+  continuetext.style('color', '#000000')
+  continuetext.center('horizontal');
+  //continuetext.style('font-size', "30px")
 
+  if(freeze == false){
+    stretchy.maxSpeed = 5-tail.length*0.1;
+  stretchy.velocity.x = (mouseX-stretchy.position.x)/10;
+  stretchy.velocity.y = (mouseY-stretchy.position.y)/10;
+
+  continuetext.hide()
+  textsp.visible = false
   //update HP
   distLife = dist(width / 2, height / 2, stretchy.position.x,stretchy.position.y)
-  if (distLife < 200) {
+  if (distLife < 200*camerascale) {
     lifespan++
     if (lifespan >= 1000) lifespan = 1000
   } else {
     lifespan -= 2
   }
+  }else{
+    stretchy.velocity.x = 0
+  stretchy.velocity.y = 0
 
+  }
   //text
   // hptext = createDiv("HP " + lifespan)
   // hptext.position(10, 30)
   // hptext.style('color', '#FFFFFF')
   scoretext = createDiv("TRIBUTE: " + blockcount)
-  scoretext.position(windowWidth/2, 120)
+  scoretext.position(windowWidth/2, 60)
   scoretext.center('horizontal');
   scoretext.style('color', '#000000')
 
-  continuetext = createDiv("Press to continue")
-  continuetext.position(width / 2, height / 5 * 4)
-  continuetext.style('color', '#FFFFFF')
-  continuetext.style('font-size', "40px")
-  //continuetext.style('text-align:center')
-  continuetext.hide()
+  loadtext = createDiv("LOAD: " + tail.length)
+  loadtext.position(windowWidth/2, 80)
+  loadtext.center('horizontal');
+  loadtext.style('color', '#000000')
+
+
+
+ 
 
   if(stretchy.collide(towersp)){
     for (i = 0; i < tail.length; i++) {
@@ -281,6 +309,7 @@ function draw() {
     for (i = 0; i < tail.length; i++) {
       blockcount++
       tail.splice(i, 1)
+      
     }
     //print(tail)
 
@@ -290,8 +319,8 @@ function draw() {
 }
 
 function safeArea(){
-    filter(BLUR, 3);
-    ellipse(width / 2, height / 2,400)
+  fill(231,100,100,20)
+    ellipse(width / 2, height / 2,400*camerascale)
 }
 
 function playerMove() {
@@ -324,7 +353,7 @@ function isOver() {
   if (lifespan <= 0) {
     //fill(255)
     dietext = createDiv("LIFE ENDED")
-    dietext.position(windowWidth/2-20, 90)
+    dietext.position(windowWidth/2-20, 100)
     dietext.center('horizontal');
     dietext.style('color', '#000000')
     //dietext.center('horizontal');
@@ -338,17 +367,30 @@ function isOver() {
 
 function isTowerTall() {
 
+
+
   if (blockcount / 9 > towerlevel) {
-    camera.zoom = camerazoom - 0.05
-    camerazoom -= 0.05
+    // camera.zoom = camerazoom - 0.05
+    // camerazoom -= 0.05
+    camerascale = camerascale* 0.95
     towerlevel++
     lifespan = 1000
     //resizeCanvas(windowWidth, windowHeight);
-    textBox.show()
+    //textBox.show()
     continuetext.show()
     towerani.nextFrame();
-
-    noLoop()
+    //textsp.depth = 0;
+    textsp.depth = allSprites.maxDepth()+1
+    //console.log(allSprites.minDepth + allSprites.maxDepth)
+    textsp.visible = true
+    //drawSprites(textsp)
+    
+    textsp.scale = 0.35
+    textani.playing = false;
+    textani.nextFrame();
+ 
+    freeze = true;
+    //noLoop()
   }
 
 
@@ -381,7 +423,7 @@ function drawHealthBar() {
   // }
   fill(0,255*lifespan/1000,0)
   rectMode(CENTER);
-  rect(windowWidth/2,100, healthBarWidth*(lifespan/1000), 10);
+  rect(windowWidth/2,50, healthBarWidth*(lifespan/1000), 10);
 }
 
 function drawTail() {
