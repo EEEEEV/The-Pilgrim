@@ -94,8 +94,7 @@ function prepareGame() {
     running = false
 
     canvas = createCanvas(windowWidth, windowHeight);
-    //background('#110D0C');
-    background('#E5EBE7');
+    background('#110D0C');
 
     fill(200)
     imageMode(CENTER)
