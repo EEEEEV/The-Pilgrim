@@ -231,7 +231,7 @@ function draw() {
         loadtext.style('color', '#74F84B')
         loadtext.style('font-family', 'OratorStd');
 
-        stretchy.maxSpeed = 8 - tail.length * 0.1;
+        stretchy.maxSpeed = 6 - tail.length * 0.1;
         stretchy.velocity.x = (mouseX - stretchy.position.x) / 10;
         stretchy.velocity.y = (mouseY - stretchy.position.y) / 10;
 
