@@ -34,8 +34,8 @@ function Blocks(x, y){
     }
     this.spcollide = function(player,sp){
         //this.blocksp = blocksp;
-        collide = player.overlap(sp);
-        return collide;
+        //collide = player.overlap(sp);
+        //return collide;
         //print("colliding? " + hit);
         // if(hit){
         //     destroy()
